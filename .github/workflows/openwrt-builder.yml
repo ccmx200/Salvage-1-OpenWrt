@@ -69,10 +69,10 @@ jobs:
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P1_SH
         
-    - name: Add Salvage_1
-      run: |
-        cd openwrt
-        bash "$GITHUB_WORKSPACE/apply_salvage_patches.sh"
+    # - name: Add Salvage_1
+    #   run: |
+    #     cd openwrt
+    #     bash "$GITHUB_WORKSPACE/apply_salvage_patches.sh"
       
     - name: Update feeds
       run: cd openwrt && ./scripts/feeds update -a 
