@@ -17,7 +17,7 @@ on:
   workflow_dispatch:
 
 env:
-  REPO_URL: https://github.com/LiBwrt/openwrt-6.x
+  REPO_URL: https://github.com/ccmx200/openwrt-salvage-1-code
   REPO_BRANCH: 25.12-nss
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: .config
@@ -30,7 +30,7 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-26.04-arm
+    runs-on: ubuntu-26.04
     permissions:
       contents: write                # ← add this line
     steps:
