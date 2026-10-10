@@ -1,6 +1,13 @@
-# Salvage-1 OpenWrt 固件 
+# Salvage-1 OpenWrt 固件
 
-**硬件平台：IPQ8072a（三木爱折腾） | 自适配设备(注意建议去看这个自己编译，这个仓库的固件自动补丁有问题不想修了release可能不稳定，建议用稳定仓库https://github.com/ccmx200/openwrt-6.x -b 25.12-nss) | QCA8075 + QCA8081**
+**硬件平台：IPQ8072a（三木爱折腾） | 自适配设备 | QCA8075 + QCA8081**
+
+---
+
+## 状态更新
+
+- **M.2 接口已正常驱动**
+- 当前构建适合日常使用，刷机前请务必备份原厂分区与 U-Boot 环境变量。
 
 ---
 
@@ -15,12 +22,11 @@
 | 有线网络（lan1–lan3 + wan 2.5G，NSS 加速） | 正常 |
 | USB 3.0 | 正常 |
 | SD 卡槽 | 正常 |
+| M.2 接口 | 正常 |
 
 **已知限制：**
 
-- M.2 接口暂无法驱动，需通过 USB 转接板使用。
 - 网口 MAC 地址需自行固化。
-- QModem 不再内置于当前构建中，如有需要请自行安装。
 
 ---
 
@@ -45,11 +51,12 @@ setenv serverip 192.168.1.200
 setenv ipaddr 192.168.1.100
 
 # 加载固件到内存（请替换为实际文件名）
-tftpboot 0x60000000 openwrt-qualcommax-ipq807x-cuicanmx_salvage-1-squashfs-factory.ubi
+tftpboot 0x60000000 libwrt-qualcommax-ipq807x-cuicanmx_salvage-1-squashfs-factory.ubi
 
-# 擦除整个 NAND 并写入（xxxxxx 请替换为 tftpboot 显示的实际对齐大小）
+# 擦除整个 NAND 并写入
+# 将 0xXXXXXX 替换为 tftpboot 显示的实际对齐大小
 nand erase 0x0 0x10000000
-nand write 0x60000000 0x0 0xxxxxx
+nand write 0x60000000 0x0 0xXXXXXX
 
 # 设置环境变量（固定分区，全盘 rootfs）
 setenv mtdids 'nand0=nand0'
@@ -66,30 +73,14 @@ reset
 
 ## 设备树关键配置
 
-设备树通过 SPI NOR 的 `0:ART` 分区提供 Wi-Fi 校准数据与网口 MAC 地址。NAND 已定义为全盘 `rootfs`，eMMC 控制器已启用 HS400 模式。
+设备树通过 SPI NOR 的 `0:ART` 分区提供 Wi-Fi 校准数据与网口 MAC 地址。NAND 已定义为全盘 `rootfs`，eMMC 控制器已启用 HS400 模式。M.2 接口相关配置已适配，当前可正常使用。
 
 ---
 
 ## 恢复原厂
 
-如需回到原厂系统，请使用备份的原厂分区文件通过 U-Boot 恢复，并还原原始的 U-Boot 环境变量（`mtdparts`、`bootcmd` 等）。
+如需回到原厂系统，请使用备份的原厂分区文件通过 U-Boot 恢复，并还原原始的 U-Boot 环境变量（`mtdids`、`mtdparts`、`bootargs`、`bootcmd` 等）。
 
----
-
-## Q&A
-
-**问题：** Wi-Fi 无法启动出现以下日志：
-
-```
-[   76.696620] ath11k c000000.wifi: qmi failed to load CAL data file:cal-ahb-c000000.wifi.bin
-[   76.696713] ath11k c000000.wifi: failed to load board data file: -12
-```
-
-**解决：** 执行以下命令：
-
-```bash
-dd if=/dev/mtd18 of=/lib/firmware/ath11k/IPQ8074/hw2.0/cal-ahb-c000000.wifi.bin bs=1 skip=131072 count=131072
-```
 
 ---
 
@@ -97,7 +88,7 @@ dd if=/dev/mtd18 of=/lib/firmware/ath11k/IPQ8074/hw2.0/cal-ahb-c000000.wifi.bin 
 
 - 硬件适配：cuicanmx
 - 项目地址：[ActionsOP](https://github.com/ccmx200/Actions-OpenWrt)
-- 问题反馈：提交 Issue 或邮件联系
+- 问题反馈：提交 Issue 或邮件联系作者
 
 ---
 
@@ -107,4 +98,4 @@ dd if=/dev/mtd18 of=/lib/firmware/ath11k/IPQ8074/hw2.0/cal-ahb-c000000.wifi.bin 
 >
 > 固件通过 GitHub Actions 自动编译，未植入任何危害信息安全的后门、脚本或恶意程序。若对已发布固件的安全性存有疑虑，请自行查阅源码并编译使用。
 >
-> 本仓库仅为个人自用编译，`.config` 中集成了社区呼声较高的常见插件。若对固件有任何不满，请勿无端指责或散播未经证实的言论。
+> 本仓库仅为个人自用编译，`.config` 中集成了社区呼声较高的常见插件。欢迎基于事实反馈问题，请勿无端指责或散播未经证实的言论。
